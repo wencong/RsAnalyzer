@@ -2,12 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using UnityEditor;
 using System.IO;
+using UnityEditor;
 
 namespace SSQA {
     public class ShaderItem {
         public ShaderInfo shaderInfo;
+        public string szName;
         public List<MaterialInfo> lstMaterialInfo = new List<MaterialInfo>();
         public Dictionary<MaterialInfo, List<ModelInfo>> matMap = new Dictionary<MaterialInfo, List<ModelInfo>>();
 
@@ -19,6 +20,7 @@ namespace SSQA {
 
         public ShaderItem(ShaderInfo shaderInfo) {
             this.shaderInfo = shaderInfo;
+            this.szName = shaderInfo.szName;
         }
 
         public void AddMaterialInfo(MaterialInfo matInfo, ModelInfo modelInfo) {
@@ -56,7 +58,8 @@ namespace SSQA {
                     MaterialInfo matInfo = lstMaterialInfo[i];
                     GUILayout.BeginHorizontal();
                     {
-                        if (GUILayout.Button(matInfo.szName, WinUnitConfig.sNameWidth)) {
+                        GUILayout.Label("", WinUnitConfig.sHalfNameWidth);
+                        if (GUILayout.Button(matInfo.szName, WinUnitConfig.sHalfNameWidth)) {
                             RsUtil.SelectRs(matInfo);
                         }
                         List<ModelInfo> lstModels = matMap[matInfo];
@@ -109,6 +112,7 @@ namespace SSQA {
     public class ShaderAnalyzer : IWinUnit {
         private List<ShaderItem> m_lstShaderItem = new List<ShaderItem>();
         private Dictionary<string, ShaderItem> m_nameMap = new Dictionary<string,ShaderItem>();
+        private string m_szSearchItem = string.Empty;
 
         // Use this for initialization
         public void Start () {
@@ -121,22 +125,48 @@ namespace SSQA {
             else {
                 UnityEngine.Object asset = Selection.activeObject;
                 if (asset != null) {
-                    //Debug.Log(AssetDatabase.GetAssetPath(asset));
                     string path = AssetDatabase.GetAssetPath(asset);
-                    if (Directory.Exists(path)) {
-                        string[] arrayFiles = Directory.GetFiles(path, "*.prefab", SearchOption.AllDirectories);
-                        Debug.LogFormat(arrayFiles.Length.ToString());
-                    }
+                    _Analyze(path);
                 }
             }
         }
 
+
         // Update is called once per frame
         public void OnGUI() {
+
+            _DrawSummaryInfo();
+
+            _DrawSearchLabel();
+
+            _DrawDataBody();
+        }
+
+        private void _DrawDataBody() {
             for (int i = 0; i < m_lstShaderItem.Count; ++i) {
-                m_lstShaderItem[i].OnGUI();
+                ShaderItem si = m_lstShaderItem[i];
+                if (si.szName.ToLower().Contains(m_szSearchItem.ToLower())) {
+                    si.OnGUI();
+                }
             }
         }
+
+        private void _DrawSummaryInfo() {
+            GUILayout.BeginHorizontal();
+            {
+                GUILayout.Label(string.Format("shader 总数: {0}", m_lstShaderItem.Count), WinUnitConfig.sNameWidth);
+            }
+            GUILayout.EndHorizontal();
+        }
+
+        private void _DrawSearchLabel() {
+            GUILayout.BeginHorizontal();
+            {
+                m_szSearchItem = GUILayout.TextField(m_szSearchItem, WinUnitConfig.sNameWidth);
+            }
+            GUILayout.EndHorizontal();
+        }
+
 
         private void _Analyze(Transform trans) {
             for (int i = 0; i < trans.childCount; ++i) {
@@ -152,6 +182,31 @@ namespace SSQA {
             }
         }
 
+        private void _Analyze(string path) {
+            if (!Directory.Exists(path)) {
+                return;
+            }
+
+            string[] arrPrefabPath = Directory.GetFiles(path, "*.prefab", SearchOption.AllDirectories);
+
+            for (int i = 0; i < arrPrefabPath.Length; ++i) {
+                GameObject prefabInst = AssetDatabase.LoadAssetAtPath<GameObject>(arrPrefabPath[i]);
+                if (prefabInst == null) {
+                    Debug.LogErrorFormat("Load Prefab Failed : {0}", arrPrefabPath[i]);
+                    continue;
+                }
+                PrefabInstanceInfo pi = new PrefabInstanceInfo(prefabInst);
+
+                EditorUtility.DisplayCancelableProgressBar("Load Prefab", arrPrefabPath[i], (float)i / arrPrefabPath.Length);
+
+                ModelInfo[] arrModelInfo = pi.GetModelInfo();
+                for (int j = 0; j < arrModelInfo.Length; ++j) {
+                    _AnalyzeModel(arrModelInfo[j]);
+                }
+            }
+            EditorUtility.ClearProgressBar();
+        }
+
         private void _AnalyzeModel(ModelInfo modelInfo) {
             MeshInfo meshInfo = modelInfo.GetMeshInfo();
             MaterialInfo[] matsInfo = modelInfo.GetMaterialInfo();
@@ -162,6 +217,10 @@ namespace SSQA {
 
             for (int j = 0; j < matsInfo.Length; ++j) {
                 MaterialInfo matInfo = matsInfo[j];
+                if (matInfo == null) {
+                    continue;
+                }
+
                 ShaderInfo shaderInfo = matInfo.GetShaderInfo();
 
                 if (shaderInfo == null) {

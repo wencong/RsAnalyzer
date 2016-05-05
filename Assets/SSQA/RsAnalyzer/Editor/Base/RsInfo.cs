@@ -175,7 +175,7 @@ namespace SSQA {
         }
 
         private void PickUpMats() {
-            Renderer render = gameobject.GetComponent<Renderer>();
+            Renderer render = gameobject.GetComponent<MeshRenderer>();
             if (render == null) {
                 return;
             }
