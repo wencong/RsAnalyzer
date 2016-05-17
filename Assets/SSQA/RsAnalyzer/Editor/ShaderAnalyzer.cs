@@ -131,6 +131,9 @@ namespace SSQA {
             }
         }
 
+        public void Update() {
+
+        }
 
         // Update is called once per frame
         public void OnGUI() {
@@ -166,7 +169,6 @@ namespace SSQA {
             }
             GUILayout.EndHorizontal();
         }
-
 
         private void _Analyze(Transform trans) {
             for (int i = 0; i < trans.childCount; ++i) {

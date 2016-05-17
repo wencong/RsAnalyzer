@@ -21,6 +21,7 @@ namespace SSQA {
 
             win.RegisterAnalyzerWindow("PrefabAnalyzer", new PrefabInstanceAnalyzer());
             win.RegisterAnalyzerWindow("ShaderAnalyzer", new ShaderAnalyzer());
+            win.RegisterAnalyzerWindow("PixelAnalyzer", new PixelAnalyzer());
 
             win.Show();
         }
@@ -37,6 +38,12 @@ namespace SSQA {
         private void UnRegisterAllWindow() {
             m_analyzerWindows.Clear();
             m_inspectName.Clear();
+        }
+
+        public void Update() {
+            if (m_activeAnalyzer != null) {
+                m_activeAnalyzer.Update();
+            }
         }
 
         public void OnGUI() {

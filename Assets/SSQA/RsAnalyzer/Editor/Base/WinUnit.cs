@@ -15,6 +15,7 @@ namespace SSQA {
     public interface IWinUnit {
         void Start();
         void OnGUI();
+        void Update();
         void OnDisable();
     }
 }

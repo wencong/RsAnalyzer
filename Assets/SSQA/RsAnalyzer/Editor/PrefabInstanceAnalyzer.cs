@@ -109,6 +109,10 @@ namespace SSQA {
             }
         }
 
+        public void Update() {
+
+        }
+
         private void _DrawUIHead() {
             GUILayout.BeginHorizontal();
             {
