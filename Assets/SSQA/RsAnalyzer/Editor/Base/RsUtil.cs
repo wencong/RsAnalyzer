@@ -91,7 +91,7 @@ namespace SSQA {
             SelectRss(arrayRs);
         }
 
-        public static Material CreateSolidColorMaterial(PixelsObject pixelObject) {
+        public static Material CreateSolidColorMaterial(PixelObject pixelObject) {
             Material matSolidColor = new Material(Shader.Find("SolidColor"));
             Color solidColor = CreateSolidColor();
             Color32 solidColor32 = (Color32)solidColor;
@@ -145,10 +145,10 @@ namespace SSQA {
             return false;
         }
 
-        public static PixelsObject GetPixelObject(Color32 color, List<PixelsObject> pixelsObjects) {
-            for (int i = 0; i < pixelsObjects.Count; ++i) {
-                if (IsEqual(pixelsObjects[i].renderColor, color)) {
-                    return pixelsObjects[i];
+        public static PixelObject GetPixelObject(Color32 color, List<PixelObject> PixelObjects) {
+            for (int i = 0; i < PixelObjects.Count; ++i) {
+                if (IsEqual(PixelObjects[i].renderColor, color)) {
+                    return PixelObjects[i];
                 }
             }
             return null;

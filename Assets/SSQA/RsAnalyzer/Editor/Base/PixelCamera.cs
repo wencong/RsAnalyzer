@@ -48,7 +48,7 @@ namespace SSQA {
             RenderTexture.active = rtOld;
         }
 
-        private void _CalculatePixels(PixelsObject pixelObject, Texture2D texRender, Texture2D texPixels) {
+        private void _CalculatePixels(PixelObject pixelObject, Texture2D texRender, Texture2D texPixels) {
             Color32[] pixels = texRender.GetPixels32();
 
             pixelObject.nVisiblePixel = 0;
@@ -75,9 +75,8 @@ namespace SSQA {
 
         #region public method
         public bool Init(string layer, int nWidth, int nHeight) {
-            nWidth = Screen.width;
-            nHeight = Screen.height;
-
+            nHeight = Camera.main.pixelHeight;
+            nWidth = Camera.main.pixelWidth;
             renderTexture = new RenderTexture(nWidth, nHeight, 24);
             texRender = new Texture2D(nWidth, nHeight);
             texPixels = new Texture2D(nWidth, nHeight);
@@ -108,7 +107,7 @@ namespace SSQA {
             return true;
         }
 
-        public bool Render(PixelsObject pixelObject, bool bCalculate) {
+        public bool Render(PixelObject pixelObject, bool bCalculate) {
             ResetClippingPlanes();
             RenderSettings.fog = false;
 
@@ -137,12 +136,12 @@ namespace SSQA {
             return true;
         }
 
-        public bool RenderAndCalculateEveryPixel(List<PixelsObject> pixelObjects) {
+        public bool RenderAndCalculateEveryPixel(List<PixelObject> pixelObjects) {
             //ResetClippingPlanes();
 
             RenderSettings.fog = false;
 
-            foreach (PixelsObject pixelObject in pixelObjects) {
+            foreach (PixelObject pixelObject in pixelObjects) {
                 pixelObject.SetLayer(renderCamera.layer);
                 pixelObject.SetPixelMat();
             }
@@ -156,7 +155,7 @@ namespace SSQA {
                 Color32 color = pixels[nIndex];
                 //uint hashCode = RuntimeUtils.ConvertColor32ToInt(color);
 
-                PixelsObject po = null;
+                PixelObject po = null;
                 //RuntimeUtils.colorHashMap.TryGetValue(hashCode, out po);
                 po = RsUtil.GetPixelObject(color, pixelObjects);
                 if (po != null) {
@@ -164,7 +163,7 @@ namespace SSQA {
                 }
             }
 
-            foreach (PixelsObject pixelObject in pixelObjects) {
+            foreach (PixelObject pixelObject in pixelObjects) {
                 pixelObject.nScreenPixels = pixels.Length;
                 /*
                 if (pixelObject.pixelsInfo.nVisiblePixels > pixelObject.pixelsInfo.nMaxVisiblePIxels) {
@@ -182,10 +181,10 @@ namespace SSQA {
             return true;
         }
 
-        public bool Render(List<PixelsObject> pixelObjects) {
+        public bool Render(List<PixelObject> pixelObjects) {
             RenderSettings.fog = false;
 
-            foreach (PixelsObject pixelObject in pixelObjects) {
+            foreach (PixelObject pixelObject in pixelObjects) {
                 pixelObject.SetLayer(renderCamera.layer);
             }
 
@@ -193,7 +192,7 @@ namespace SSQA {
             renderCamera.GetComponent<Camera>().Render();
             _ReadPixelsFromRenderTexture(texRender);
 
-            foreach (PixelsObject pixelObject in pixelObjects) {
+            foreach (PixelObject pixelObject in pixelObjects) {
                 pixelObject.SetPixelMat();
             }
 
@@ -201,7 +200,7 @@ namespace SSQA {
             renderCamera.GetComponent<Camera>().Render();
             _ReadPixelsFromRenderTexture(texPixels);
 
-            foreach (PixelsObject pixelObject in pixelObjects) {
+            foreach (PixelObject pixelObject in pixelObjects) {
                 pixelObject.ResetMat();
                 pixelObject.ResetLayer();
             }

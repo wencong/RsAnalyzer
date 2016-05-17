@@ -20,8 +20,8 @@ namespace SSQA {
             eRenderNone,
         }
 
-        private List<PixelsObject> pixelsObjects = new List<PixelsObject>();
-        //private IComparer<PixelsObject>[] SortMethod = new IComparer<PixelsObject>[5] { new SortByP1(), new SortByP2(), new SortByP3(), new SortByP4(), new SortByP5() };
+        private List<PixelObject> PixelObjects = new List<PixelObject>();
+        //private IComparer<PixelObject>[] SortMethod = new IComparer<PixelObject>[5] { new SortByP1(), new SortByP2(), new SortByP3(), new SortByP4(), new SortByP5() };
 
         private string layerName = "";
         private PixelCamera renderCamera = null;
@@ -34,11 +34,11 @@ namespace SSQA {
         private bool bInited = false;
         
 #region property
-        public List<PixelsObject> objects
+        public List<PixelObject> objects
         {
             get
             {
-                return pixelsObjects;
+                return PixelObjects;
             }
         }
 
@@ -69,12 +69,12 @@ namespace SSQA {
             ShaderAnalyzerBase.SetObjectLayer(clone, layerName);
             */
 
-            pixelsObjects.Add(new PixelsObject(go));
+            PixelObjects.Add(new PixelObject(go));
         }
 
         private bool _Contain(GameObject gameObject)
         {
-            foreach (PixelsObject pixelObject in pixelsObjects)
+            foreach (PixelObject pixelObject in PixelObjects)
             {
                 if (pixelObject.gameObject == gameObject)
                     return true;
@@ -103,7 +103,7 @@ namespace SSQA {
 
         public bool UnInit()
         {
-            pixelsObjects.Clear();
+            PixelObjects.Clear();
             renderCamera.UnInit();
             bInited = false;
 
@@ -112,7 +112,7 @@ namespace SSQA {
 
         public bool ClearObjecs()
         {
-            pixelsObjects.Clear();
+            PixelObjects.Clear();
             return true;
         }
 
@@ -130,7 +130,7 @@ namespace SSQA {
 
         public void FindSceneModelSelect(UnityEngine.GameObject root, bool bClear = false) {
             if (bClear == true) {
-                pixelsObjects.Clear();
+                PixelObjects.Clear();
                 nSnapIndex = 0;
             }
 
@@ -141,16 +141,16 @@ namespace SSQA {
 
         }
 
-        public List<PixelsObject> GetObjectInFrustum()
+        public List<PixelObject> GetObjectInFrustum()
         {
-            List<PixelsObject> retList = new List<PixelsObject>();
+            List<PixelObject> retList = new List<PixelObject>();
 
             Plane[] planesFrustum = GeometryUtility.CalculateFrustumPlanes(Camera.main);
 
-            //for (Renderer renderer in pixelsObjects)
-            for (int i = 0; i < pixelsObjects.Count; ++i)
+            //for (Renderer renderer in PixelObjects)
+            for (int i = 0; i < PixelObjects.Count; ++i)
             {
-                PixelsObject po = pixelsObjects[i];
+                PixelObject po = PixelObjects[i];
 
                 if (RsUtil.IsObjectInFrustumEx(planesFrustum, po.gameObject))
                 {
@@ -190,8 +190,8 @@ namespace SSQA {
 
                         if (renderMode == RenderMode.eRenderInEditor)
                         {
-                            //renderCamera.Render(pixelsObjects);
-                            List<PixelsObject> renderlist = GetObjectInFrustum();
+                            //renderCamera.Render(PixelObjects);
+                            List<PixelObject> renderlist = GetObjectInFrustum();
                             Debug.Log("RenderAndCalculateEveryPixel total : " + renderlist.Count);
                             renderCamera.RenderAndCalculateEveryPixel(renderlist);
                         }
@@ -206,9 +206,9 @@ namespace SSQA {
                 case RenderStatus.eSnapShotSingle:
                     {
                         //Debug.Log("SA update single");
-                        if (nSnapIndex == pixelsObjects.Count)
+                        if (nSnapIndex == PixelObjects.Count)
                         {
-                            //renderCamera.RenderAndCalculateEveryPixel(pixelsObjects);
+                            //renderCamera.RenderAndCalculateEveryPixel(PixelObjects);
 
                             nSnapIndex = 0;
                             renderStatus = RenderStatus.eSnapShotNone;
@@ -219,7 +219,7 @@ namespace SSQA {
                             }
                             return;
                         }
-                        PixelsObject pixelObject = pixelsObjects[nSnapIndex];
+                        PixelObject pixelObject = PixelObjects[nSnapIndex];
                         renderCamera.Render(pixelObject, true);
                         nSnapIndex++;
 

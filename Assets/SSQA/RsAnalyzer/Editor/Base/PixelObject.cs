@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace SSQA {
-    public class PixelsObject {
+    public class PixelObject {
         // 保存物体的原材质
         public Dictionary<Renderer, Material[]> matInfo = new Dictionary<Renderer, Material[]>();
 
@@ -29,7 +29,7 @@ namespace SSQA {
         #region property
         #endregion
 
-        public PixelsObject(GameObject gameObject) {
+        public PixelObject(GameObject gameObject) {
             this.gameObject = gameObject;
             this.nOldLayer = gameObject.layer;
             this.name = gameObject.name;
