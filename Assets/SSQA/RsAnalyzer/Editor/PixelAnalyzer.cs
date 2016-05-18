@@ -12,14 +12,16 @@ namespace SSQA {
 
         private string m_szSearchItem = string.Empty;
 
+        private Vector2 m_scrollPos = Vector2.zero;
+
         public void Start() {
             RsUtil.AddLayer(szLayerName);
 
             if (controller == null) {
                 controller = new PixelController(szLayerName);
-                controller.Init();
             }
-            
+
+            controller.Init();
             controller.SetRenderMode(PixelController.RenderMode.eRenderInEditor);
             controller.SetRenderStatus(PixelController.RenderStatus.eSnapShotAll);
 
@@ -51,8 +53,6 @@ namespace SSQA {
         }
 
         private void _DrawTexture() {
-            int nWidthc = Screen.width;
-            int nHeightc = Screen.height;
             /*
             if (cameraRenderPixels == null)
                 return;
@@ -77,27 +77,54 @@ namespace SSQA {
                 GUILayout.Label("Name", WinUnitConfig.sNameWidth);
                 if (GUILayout.Button("像素数", WinUnitConfig.sButtonWidth)) {
                     controller.objects.Sort((e1, e2) => {
-                        return 1;
+                        if (e1.nVisiblePixel > e2.nVisiblePixel) {
+                            return -1;
+                        }
+                        else if (e1.nVisiblePixel < e2.nVisiblePixel) {
+                            return 1;
+                        }
+                        return 0;
                     }
                     );
                 }
 
                 if (GUILayout.Button("顶点数", WinUnitConfig.sButtonWidth)) {
                     controller.objects.Sort((e1, e2) => {
-                        return 1;
+                        if (e1.nVertex > e2.nVertex) {
+                            return -1;
+                        }
+                        else if (e1.nVertex < e2.nVertex) {
+                            return 1;
+                        }
+                        return 0;
                     }
                     );
                 }
 
                 if (GUILayout.Button("贡献率", WinUnitConfig.sButtonWidth)) {
                     controller.objects.Sort((e1, e2) => {
-                        return 1;
+                        if (e1.pixelContribution > e2.pixelContribution) {
+                            return -1;
+                        }
+                        else if (e1.pixelContribution < e2.pixelContribution) {
+                            return 1;
+                        }
+                        return 0;
                     }
                     );
                 }
 
                 if (GUILayout.Button("复杂率", WinUnitConfig.sButtonWidth)) {
-
+                    controller.objects.Sort((e1, e2) => {
+                        if (e1.modelComplex > e2.modelComplex) {
+                            return -1;
+                        }
+                        else if (e1.modelComplex < e2.modelComplex) {
+                            return 1;
+                        }
+                        return 0;
+                    }
+                    );
                 }
             }
             GUILayout.EndHorizontal();
@@ -114,6 +141,7 @@ namespace SSQA {
         private void _DrawPixelData() {
             List<PixelObject> objs = controller.objects;
 
+            m_scrollPos = GUILayout.BeginScrollView(m_scrollPos);
             for (int i = 0; i < objs.Count; ++i) {
                 PixelObject obj = objs[i];
                 if (!obj.name.ToLower().Contains(m_szSearchItem.ToLower())) {
@@ -127,9 +155,14 @@ namespace SSQA {
                     }
                     GUILayout.Label(obj.nVisiblePixel.ToString(), WinUnitConfig.sButtonWidth);
                     GUILayout.Label(obj.nVertex.ToString(), WinUnitConfig.sButtonWidth);
+
+                    GUILayout.Label(string.Format("{0:0.00}", obj.pixelContribution), WinUnitConfig.sButtonWidth);
+                    GUILayout.Label(string.Format("{0:.00}", obj.modelComplex), WinUnitConfig.sButtonWidth);
+
                 }
                 GUILayout.EndHorizontal();
             }
+            GUILayout.EndScrollView();
         }
 
         public void OnDisable() {

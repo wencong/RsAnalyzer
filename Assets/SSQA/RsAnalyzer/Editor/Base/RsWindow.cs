@@ -47,6 +47,17 @@ namespace SSQA {
         }
 
         public void OnGUI() {
+            bool bStart = false;
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Start")) {
+                //prefabAnalyzer.Start(Selection.activeGameObject.transform);
+                //if (Selection.activeGameObject != null) {
+                bStart = true;
+                //}
+
+            }
+            GUILayout.EndHorizontal();
+
             GUILayout.BeginHorizontal();
             {
                 m_nActiveAnalyzer = GUILayout.Toolbar(m_nActiveAnalyzer, m_inspectName.ToArray());
@@ -64,15 +75,9 @@ namespace SSQA {
                 return;
             }
 
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Start")) {
-                //prefabAnalyzer.Start(Selection.activeGameObject.transform);
-                //if (Selection.activeGameObject != null) {
+            if (bStart) {
                 m_activeAnalyzer.Start();
-                //}
-                
             }
-            GUILayout.EndHorizontal();
 
             m_activeAnalyzer.OnGUI();
         }

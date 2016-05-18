@@ -137,6 +137,9 @@ namespace SSQA {
 
         // Update is called once per frame
         public void OnGUI() {
+            if (m_lstShaderItem.Count == 0) {
+                return;
+            }
 
             _DrawSummaryInfo();
 

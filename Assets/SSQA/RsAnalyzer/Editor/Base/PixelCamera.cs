@@ -12,6 +12,8 @@ namespace SSQA {
         public Texture2D texPixels = null;
         private GameObject renderCamera = null;
 
+        public static int sTotalScreenPixels = 0;
+
         #region private method
         private bool _CreateCamera(string layerName) {
             renderCamera = new GameObject("Camera");
@@ -77,6 +79,8 @@ namespace SSQA {
         public bool Init(string layer, int nWidth, int nHeight) {
             nHeight = Camera.main.pixelHeight;
             nWidth = Camera.main.pixelWidth;
+            sTotalScreenPixels = nHeight * nWidth;
+
             renderTexture = new RenderTexture(nWidth, nHeight, 24);
             texRender = new Texture2D(nWidth, nHeight);
             texPixels = new Texture2D(nWidth, nHeight);

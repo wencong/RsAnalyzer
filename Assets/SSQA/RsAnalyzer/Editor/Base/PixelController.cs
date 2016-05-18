@@ -28,7 +28,7 @@ namespace SSQA {
         private RenderStatus renderStatus = RenderStatus.eSnapShotNone;
         private RenderMode renderMode = RenderMode.eRenderNone;
 
-        private float fDeltTime = 0.0f;
+        //private float fDeltTime = 0.0f;
         //private float fUpdateRate = 1.0f;  // 1秒刷新一次
         public int nSnapIndex = 0;
         private bool bInited = false;
@@ -132,6 +132,7 @@ namespace SSQA {
             if (bClear == true) {
                 PixelObjects.Clear();
                 nSnapIndex = 0;
+            
             }
 
             Renderer[] renderers = root.GetComponentsInChildren<Renderer>();
@@ -184,7 +185,7 @@ namespace SSQA {
                             return;
                         }
                         */
-                        fDeltTime = (float)EditorApplication.timeSinceStartup;
+                        //fDeltTime = (float)EditorApplication.timeSinceStartup;
 
                         //Debug.Log("SA update all");
 

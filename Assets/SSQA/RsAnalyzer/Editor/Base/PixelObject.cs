@@ -27,6 +27,28 @@ namespace SSQA {
         public int nVertex = 0;
 
         #region property
+        public float pixelContribution {
+            get {
+                if (PixelCamera.sTotalScreenPixels == 0.0f) {
+                    return 0.0f;
+                }
+                else {
+                    return (float)nVisiblePixel / PixelCamera.sTotalScreenPixels;
+                }
+            }
+        }
+
+        public float modelComplex {
+            get {
+                if (nVisiblePixel == 0) {
+                    return 1.0f;
+                }
+                else {
+                    return (float)nVertex / nVisiblePixel;
+                }
+            }
+        }
+
         #endregion
 
         public PixelObject(GameObject gameObject) {
