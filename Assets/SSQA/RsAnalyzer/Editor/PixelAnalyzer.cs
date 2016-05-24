@@ -14,6 +14,12 @@ namespace SSQA {
 
         private Vector2 m_scrollPos = Vector2.zero;
 
+
+        private long _currentTimeInMilliseconds = 0;
+        private long _tickNetLast = 0;
+        private long _tickNetInterval = 2000;
+
+
         public void Start() {
             RsUtil.AddLayer(szLayerName);
 
@@ -31,12 +37,24 @@ namespace SSQA {
         }
 
         public void Update() {
-            if (controller == null) {
-                return;
-            }
+            _currentTimeInMilliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
-            controller.Update(0.03f);
+            if (_currentTimeInMilliseconds - _tickNetLast > _tickNetInterval) {
+                if (controller != null) {
+                    controller.SetRenderMode(PixelController.RenderMode.eRenderInEditor);
+                    controller.SetRenderStatus(PixelController.RenderStatus.eSnapShotAll);
+                    controller.Update(_tickNetInterval);
+                }
+                _tickNetLast = _currentTimeInMilliseconds;
+            }
         }
+
+        public void Refresh() {
+            if (controller != null && Selection.activeGameObject != null) {
+                controller.FindSceneModelSelect(Selection.activeGameObject, true);
+            }
+        }
+
         public void OnGUI() {
             if (controller == null) {
                 return;
@@ -66,8 +84,8 @@ namespace SSQA {
             int nTextHeight = (int)(nTextWidth * texRender.height / texRender.width);
 
             GUILayout.BeginHorizontal();
-            //GUILayout.Box(texRender, GUILayout.Width(nTextWidth), GUILayout.Height(nTextHeight));
             GUILayout.Box(texPixels, GUILayout.Width(nTextWidth), GUILayout.Height(nTextHeight));
+            GUILayout.Box(texRender, GUILayout.Width(nTextWidth), GUILayout.Height(nTextHeight));
             GUILayout.EndHorizontal();
         }
 

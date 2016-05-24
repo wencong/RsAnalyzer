@@ -19,4 +19,3 @@ namespace SSQA {
         void OnDisable();
     }
 }
-

@@ -10,9 +10,13 @@ namespace SSQA {
 
         // 计算像素时的材质
         private Dictionary<Renderer, Material[]> matsPixel = new Dictionary<Renderer, Material[]>();
-
-        // 渲染像素时的材质
         private Material matPixel = null;
+
+        // 计算遮挡时的透明材质
+        private Dictionary<Renderer, Material[]> matsBlend = new Dictionary<Renderer, Material[]>();
+        private Material matBlend = null;
+        // 渲染像素时的材质
+        
         public Color32 renderColor;
 
         private int nOldLayer;
@@ -22,7 +26,6 @@ namespace SSQA {
         // pixel info
         public int nVisiblePixel = 0;
         public int nRenderPixels = 0;
-        public int nScreenPixels = 0;
 
         public int nVertex = 0;
 
@@ -57,7 +60,9 @@ namespace SSQA {
             this.name = gameObject.name;
 
             //matPixel   = RuntimeUtils.CreateBlendColorMaterial();
-            matPixel = RsUtil.CreateSolidColorMaterial(this);
+            renderColor = RsUtil.CreateSolidColor();
+            matPixel = RsUtil.CreateSolidColorMaterial(renderColor);
+            matBlend = RsUtil.CreateBlendColorMaterial(renderColor);
 
             _AnalyzeMat();
             _AnalyzeVert();
@@ -89,7 +94,6 @@ namespace SSQA {
 
         public void SetPixelMat() {
             Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
-
             foreach (Renderer render in renderers) {
                 Material[] mats = null;
                 matsPixel.TryGetValue(render, out mats);
@@ -104,13 +108,32 @@ namespace SSQA {
                         matsPixel.Add(render, mats);
                     }
                 }
-                else {
+                if (mats!= null) {
                     render.sharedMaterials = mats;
                 }
             }
+        }
 
+        public void SetBlendMat() {
+            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
             foreach (Renderer render in renderers) {
-                render.sharedMaterials = matsPixel[render];
+                Material[] mats = null;
+                matsBlend.TryGetValue(render, out mats);
+                if (mats == null) {
+                    if (render.sharedMaterials != null) {
+                        mats = new Material[render.sharedMaterials.Length];
+                        for (int i = 0; i < render.sharedMaterials.Length; ++i) {
+                            mats[i] = matBlend;
+                        }
+                    }
+                    if (mats != null) {
+                        matsBlend.Add(render, mats);
+                    }
+                }
+
+                if (mats != null) {
+                    render.sharedMaterials = mats;
+                }
             }
         }
 

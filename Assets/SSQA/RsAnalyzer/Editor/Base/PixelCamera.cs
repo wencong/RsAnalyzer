@@ -50,11 +50,11 @@ namespace SSQA {
             RenderTexture.active = rtOld;
         }
 
+        /*
         private void _CalculatePixels(PixelObject pixelObject, Texture2D texRender, Texture2D texPixels) {
             Color32[] pixels = texRender.GetPixels32();
 
             pixelObject.nVisiblePixel = 0;
-            pixelObject.nScreenPixels = pixels.Length;
 
             pixels = texPixels.GetPixels32();
 
@@ -73,6 +73,7 @@ namespace SSQA {
                 }
             }
         }
+         */ 
         #endregion
 
         #region public method
@@ -111,6 +112,7 @@ namespace SSQA {
             return true;
         }
 
+        /*
         public bool Render(PixelObject pixelObject, bool bCalculate) {
             ResetClippingPlanes();
             RenderSettings.fog = false;
@@ -139,10 +141,26 @@ namespace SSQA {
 
             return true;
         }
+        */
 
-        public bool RenderAndCalculateEveryPixel(List<PixelObject> pixelObjects) {
-            //ResetClippingPlanes();
+        public void CalculatePixelContribution(List<PixelObject> pixelObjects) {
+            if (texPixels == null) {
+                return;
+            }
 
+            Color32[] pixels = texPixels.GetPixels32();
+            for (int nIndex = 0; nIndex < pixels.Length; ++nIndex) {
+                Color32 color = pixels[nIndex];
+                PixelObject po = null;
+                po = RsUtil.GetPixelObject(color, pixelObjects);
+                if (po != null) {
+                    po.nVisiblePixel++;
+                }
+            }
+        }
+
+        public bool Render(List<PixelObject> pixelObjects) {
+            ResetClippingPlanes();
             RenderSettings.fog = false;
 
             foreach (PixelObject pixelObject in pixelObjects) {
@@ -154,29 +172,18 @@ namespace SSQA {
             renderCamera.GetComponent<Camera>().Render();
             _ReadPixelsFromRenderTexture(texPixels);
 
-            Color32[] pixels = texPixels.GetPixels32();
-            for (int nIndex = 0; nIndex < pixels.Length; ++nIndex) {
-                Color32 color = pixels[nIndex];
-                //uint hashCode = RuntimeUtils.ConvertColor32ToInt(color);
-
-                PixelObject po = null;
-                //RuntimeUtils.colorHashMap.TryGetValue(hashCode, out po);
-                po = RsUtil.GetPixelObject(color, pixelObjects);
-                if (po != null) {
-                    po.nVisiblePixel++;
-                }
+            // blend mode
+            foreach (PixelObject pixelObject in pixelObjects) {
+                //pixelObject.SetLayer(renderCamera.layer);
+                pixelObject.SetBlendMat();
             }
 
+            renderTexture.DiscardContents();
+            renderCamera.GetComponent<Camera>().Render();
+            _ReadPixelsFromRenderTexture(texRender);
+
+
             foreach (PixelObject pixelObject in pixelObjects) {
-                pixelObject.nScreenPixels = pixels.Length;
-                /*
-                if (pixelObject.pixelsInfo.nVisiblePixels > pixelObject.pixelsInfo.nMaxVisiblePIxels) {
-                    pixelObject.pixelsInfo.nMaxVisiblePIxels = pixelObject.pixelsInfo.nVisiblePixels;
-                }
-
-                pixelObject.pixelsInfo.nVisiblePixels = 0;
-                */
-
                 pixelObject.ResetMat();
                 pixelObject.ResetLayer();
             }
@@ -185,6 +192,7 @@ namespace SSQA {
             return true;
         }
 
+        /*
         public bool Render(List<PixelObject> pixelObjects) {
             RenderSettings.fog = false;
 
@@ -212,6 +220,7 @@ namespace SSQA {
             RenderSettings.fog = true;
             return true;
         }
+        */
 
         #endregion
 

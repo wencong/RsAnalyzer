@@ -62,13 +62,6 @@ namespace SSQA {
 #region private method
         private void _AddPixelObject(GameObject go, bool bIsEffect = false)
         {
-            /*
-            Transform transform = go.transform;
-            GameObject clone = GameObject.Instantiate(go, transform.position, transform.rotation) as GameObject;
-            clone.transform.parent = go.transform;
-            ShaderAnalyzerBase.SetObjectLayer(clone, layerName);
-            */
-
             PixelObjects.Add(new PixelObject(go));
         }
 
@@ -132,7 +125,6 @@ namespace SSQA {
             if (bClear == true) {
                 PixelObjects.Clear();
                 nSnapIndex = 0;
-            
             }
 
             Renderer[] renderers = root.GetComponentsInChildren<Renderer>();
@@ -142,19 +134,16 @@ namespace SSQA {
 
         }
 
-        public List<PixelObject> GetObjectInFrustum()
-        {
+        public List<PixelObject> GetObjectInFrustum() {
             List<PixelObject> retList = new List<PixelObject>();
 
             Plane[] planesFrustum = GeometryUtility.CalculateFrustumPlanes(Camera.main);
 
             //for (Renderer renderer in PixelObjects)
-            for (int i = 0; i < PixelObjects.Count; ++i)
-            {
+            for (int i = 0; i < PixelObjects.Count; ++i) {
                 PixelObject po = PixelObjects[i];
 
-                if (RsUtil.IsObjectInFrustumEx(planesFrustum, po.gameObject))
-                {
+                if (RsUtil.IsObjectInFrustumEx(planesFrustum, po.gameObject)) {
                     retList.Add(po);
                 }
             }
@@ -194,7 +183,7 @@ namespace SSQA {
                             //renderCamera.Render(PixelObjects);
                             List<PixelObject> renderlist = GetObjectInFrustum();
                             Debug.Log("RenderAndCalculateEveryPixel total : " + renderlist.Count);
-                            renderCamera.RenderAndCalculateEveryPixel(renderlist);
+                            renderCamera.Render(renderlist);
                         }
                         else if (renderMode == RenderMode.eRenderInDevice)
                         {
@@ -221,7 +210,7 @@ namespace SSQA {
                             return;
                         }
                         PixelObject pixelObject = PixelObjects[nSnapIndex];
-                        renderCamera.Render(pixelObject, true);
+                        //renderCamera.Render(pixelObject, true);
                         nSnapIndex++;
 
                         break;

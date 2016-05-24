@@ -91,13 +91,16 @@ namespace SSQA {
             SelectRss(arrayRs);
         }
 
-        public static Material CreateSolidColorMaterial(PixelObject pixelObject) {
+        public static Material CreateSolidColorMaterial(Color color) {
             Material matSolidColor = new Material(Shader.Find("SolidColor"));
-            Color solidColor = CreateSolidColor();
-            Color32 solidColor32 = (Color32)solidColor;
-            pixelObject.renderColor = solidColor32;
-            matSolidColor.SetColor("_Color", solidColor);
+            matSolidColor.SetColor("_Color", color);
             return matSolidColor;
+        }
+
+        public static Material CreateBlendColorMaterial(Color color) {
+            Material matBlend = new Material(Shader.Find("BlendColor"));
+            matBlend.SetColor("_Color", color);
+            return matBlend;
         }
 
         public static Color CreateSolidColor() {
